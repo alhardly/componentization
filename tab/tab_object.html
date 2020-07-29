@@ -1,4 +1,4 @@
-<!-- 面向过程，不封装的一般写法 -->
+<!-- 面向对象的组件化封装写法 -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -42,6 +42,15 @@
 
 <body>
     <div class="wrap">
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+
+        <section class="active">1</section>
+        <section>2</section>
+        <section>3</section>
+    </div>
+    <div class="wrap1" style="margin-top:20px">
         <button class="active">1</button>
         <button>2</button>
         <button>3</button>
@@ -139,11 +148,15 @@
     }
 
     // 实例化
+    // 当然，如果wrap也看做tab的一部分的话，那wrap的获取应该放到class中获取，在这里只用传css-class就行了
     const wrap = document.querySelector('.wrap');
-    const tab = new Tab(wrap,0);
+    const tab = new Tab(wrap, 0);
     tab.init();
 
-
+    // 如果有多个tab的话，那就再new一个就好了,这样就可以实现封装复用了
+    const wrap1 = document.querySelector('.wrap1');
+    const tab1 = new Tab(wrap1, 0);
+    tab1.init();
 
 </script>
 
