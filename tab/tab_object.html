@@ -1,0 +1,150 @@
+<!-- 面向过程，不封装的一般写法 -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面向过程的tab写法</title>
+</head>
+
+<style>
+    button {
+        width: 72px;
+        height: 36px;
+        border: none;
+        border-radius: 4px;
+        color: white;
+    }
+
+    button.active {
+
+        background-color: pink;
+    }
+
+    section {
+        height: 300px;
+        width: 333px;
+        margin-top: 10px;
+        padding: 15px;
+        color: white;
+        display: none;
+
+
+    }
+
+    section.active {
+        display: block;
+        background-color: pink;
+
+    }
+</style>
+
+<body>
+    <div class="wrap">
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+
+        <section class="active">1</section>
+        <section>2</section>
+        <section>3</section>
+    </div>
+
+</body>
+
+<script>
+    /*  // 面向过程的一般写法，如果有多个tab组件的话，就很难复用
+     const wrap = document.querySelector('.wrap');
+     const button = wrap.querySelectorAll('button');
+     const section = wrap.querySelectorAll('section');
+     // 一开始默认第一个选中
+     let activeIndex = 0;
+     for (let index = 0; index < button.length; index++) {
+ 
+         const element = button[index];
+ 
+         element.onclick = function () {
+ 
+             if (!element.classList.contains('active')) {
+                 // 清除之前的样式，
+                 button[activeIndex].classList.remove('active');
+                 section[activeIndex].classList.remove('active');
+ 
+                 element.classList.add('active');
+                 section[index].classList.add('active');
+                 // 更新选中的index，以备下次切换
+                 activeIndex = index;
+             }
+         }
+     } */
+
+
+    // 将上面的方法改写成面向对象的方法
+    // 首先，全局变量都变成 属性
+    // 然后 清除之前选中的样式，和去掉已经选中的样式，是功能代码，可以封装成方法
+    // 剩下的for循环等代码，则可以封装成初始化方法
+    // 因为现在可以用class语法糖，所以就不用prototype来写了，用prototype也是一样的，只是方法加到prototype上而已，this指向也是要特殊处理
+
+    class Tab {
+
+        // 构造函数,tab的挂在元素，以及默认选中的tab下标
+        constructor(wrap, activeIndex) {
+            this.button = wrap.querySelectorAll('button');
+            this.section = wrap.querySelectorAll('section');
+            this.activeIndex = activeIndex;
+        }
+
+        // 当元素被点击的时候，则调用测方法去修改样式
+        changeTab(element, index) {
+            if (!element.classList.contains('active')) {
+                // 清除之前的样式，
+                this.button[this.activeIndex].classList.remove('active');
+                this.section[this.activeIndex].classList.remove('active');
+
+                element.classList.add('active');
+                this.section[index].classList.add('active');
+                // 更新选中的index，以备下次切换
+                this.activeIndex = index;
+            }
+        }
+
+        // init方法，就是初始化方法，元素被点击，定义组件触发事件
+        init() {
+            for (let index = 0; index < this.button.length; index++) {
+
+                const element = this.button[index];
+
+                // element.onclick = function () {
+                // 注意，这里要改成箭头函数，否则this的指向就变了，就变成了element,因为这个onclick方法是由element调用的
+                element.onclick = () => {
+                    console.log(this);
+                    // 被点击的时候，就去changeTab
+                    this.changeTab(element, index);
+
+                    // 下面的功能代码，封装成了changeTab方法
+                    // if (!element.classList.contains('active')) {
+                    //     // 清除之前的样式，
+                    //     button[activeIndex].classList.remove('active');
+                    //     section[activeIndex].classList.remove('active');
+
+                    //     element.classList.add('active');
+                    //     section[index].classList.add('active');
+                    //     // 更新选中的index，以备下次切换
+                    //     activeIndex = index;
+                    // }
+                }
+            }
+        }
+    }
+
+    // 实例化
+    const wrap = document.querySelector('.wrap');
+    const tab = new Tab(wrap,0);
+    tab.init();
+
+
+
+</script>
+
+</html>

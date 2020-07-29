@@ -1,0 +1,89 @@
+<!-- 面向过程，不封装的一般写法 -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面向过程的tab写法</title>
+</head>
+
+<style>
+    button {
+        width: 72px;
+        height: 36px;
+        border: none;
+        border-radius: 4px;
+        color: white;
+    }
+
+    button.active {
+
+        background-color: pink;
+    }
+
+    section {
+        height: 300px;
+        width: 333px;
+        margin-top: 10px;
+        padding: 15px;
+        color: white;
+        display: none;
+
+
+    }
+
+    section.active {
+        display: block;
+        background-color: pink;
+
+    }
+</style>
+
+<body>
+    <div class="wrap">
+        <button class="active">1</button>
+        <button>2</button>
+        <button>3</button>
+
+        <section class="active">1</section>
+        <section>2</section>
+        <section>3</section>
+    </div>
+
+</body>
+
+<script>
+    // 面向过程的一般写法，如果有多个tab组件的话，就很难复用
+    const wrap = document.querySelector('.wrap');
+    const button = wrap.querySelectorAll('button');
+    const section = wrap.querySelectorAll('section');
+    // 一开始默认第一个选中
+    let activeIndex = 0;
+    for (let index = 0; index < button.length; index++) {
+
+        const element = button[index];
+
+        element.onclick = function () {
+
+            if (!element.classList.contains('active')) {
+                // 清除之前的样式，
+                button[activeIndex].classList.remove('active');
+                section[activeIndex].classList.remove('active');
+                
+                element.classList.add('active');
+                section[index].classList.add('active');
+                // 更新选中的index，以备下次切换
+                activeIndex = index;
+            }
+        }
+    }
+
+
+// 因为当前页面一个选项卡切换，所以设置了activeIndex全局变量，但是有多个的时候，就需要区分开来
+
+
+
+</script>
+
+</html>
