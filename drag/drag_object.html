@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拖拽的面向对象写法</title>
+</head>
+<style>
+    .box {
+        height: 150px;
+        width: 150px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+        background-color: pink;
+        color: white;
+        cursor: pointer;
+    }
+</style>
+
+<body>
+    <div class="box"></div>
+</body>
+<script>
+
+    // 拖拽的面向过程写法
+
+    /*  const dragBox = document.querySelector('.box');
+     // 鼠标按下的时候监听鼠标落下的位置和 鼠标与元素左上角的坐标差值
+     dragBox.onmousedown = function (event) {
+         event = event || window.event;
+ 
+         const diffx = event.clientX - dragBox.offsetLeft;
+         const diffY = event.clientY - dragBox.offsetTop;
+ 
+         // 在document中监听鼠标移动事件（即拖拽）
+         document.onmousemove = function (event) {
+             // 根据差值重新定位，因为鼠标和元素左上角的距离是相同的，所以一句鼠标当前的位置，和差值，就可以定位到元素当前应该在哪个位置
+             dragBox.style.left = `${event.clientX - diffx}px`;
+             dragBox.style.top = `${event.clientY - diffY}px`;
+         }
+ 
+         // 拖拽结束后，注销document的监听事件
+         document.onmouseup = function () {
+             document.onmousemove = null;
+             document.onmouseup = null;
+         }
+ 
+     } */
+
+    // 转成下面的面向对象的写法，不要有函数嵌套，所有document.onmouseup需要拆出来
+
+    class DragBox {
+
+        diffx = 0;
+        diffY = 0;
+
+        constructor(nodeCLass) {
+            this.dragBox = document.querySelector(nodeCLass);
+        }
+
+        // 相当于angular的init函数，声明周期的开始，初始化的开始
+        init() {
+
+            this.onmousedown();
+
+        }
+
+        onmousedown() {
+            this.dragBox.onmousedown = (event) => {
+                event = event || window.event;
+
+
+                this.diffx = event.clientX - this.dragBox.offsetLeft;
+                this.diffY = event.clientY - this.dragBox.offsetTop;
+
+                // 在document中监听鼠标移动事件（即拖拽）
+                this.onmousemove();
+
+                // 拖拽结束后，注销document的监听事件
+                this.onmouseup();
+
+            }
+        }
+
+        onmousemove() {
+            document.onmousemove = (event) => {
+                this.updatePosition(event);
+            }
+
+
+        }
+
+        onmouseup() {
+            document.onmouseup = function () {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+
+        }
+
+        updatePosition(event) {
+            // 根据差值重新定位，因为鼠标和元素左上角的距离是相同的，所以一句鼠标当前的位置，和差值，就可以定位到元素当前应该在哪个位置
+            this.dragBox.style.left = `${event.clientX - this.diffx}px`;
+            this.dragBox.style.top = `${event.clientY - this.diffY}px`;
+        }
+    }
+
+    const dragBox = new DragBox('.box');
+    dragBox.init();
+
+
+</script>
+
+</html>
