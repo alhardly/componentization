@@ -1,0 +1,169 @@
+<!-- 
+    组件化开发的写法
+
+    要求：
+    1. 四个div盒子都支持拖拽
+    2. 第二个div盒子按下之后，内部添加文字
+    3. 第三个盒子，鼠标移动时，背景色改变
+    4. 第四个盒子，鼠标放开，弹出提示信息
+
+ -->
+
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拖拽的组件化写法</title>
+</head>
+<style>
+    .box1,
+    .box2,
+    .box3,
+    .box4 {
+        box-sizing: border-box;
+        height: 100px;
+        width: 100px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        padding: 15px;
+        border-radius: 4px;
+        background-color: pink;
+        color: white;
+        cursor: pointer;
+    }
+
+    .box2 {
+        left: 110px;
+        background-color: plum;
+    }
+
+    .box3 {
+        left: 220px;
+        background-color: rosybrown;
+    }
+
+    .box4 {
+        left: 330px;
+        background-color: salmon;
+    }
+</style>
+
+<body>
+    <div class="box1"></div>
+    <div class="box2"></div>
+    <div class="box3"></div>
+    <div class="box4"></div>
+</body>
+<script>
+
+
+    class DragBox {
+
+        diffx = 0;
+        diffY = 0;
+
+        options = {
+            nodeCLass: null,
+            // 鼠标按下后的操作
+            afterMousedown() { },
+            // 移动前的操作
+            beforeMove() { },
+            // 移动结束后的操作
+            afterMove() { },
+        }
+
+        // 在init中配置
+        // constructor(nodeCLass) {
+        //     this.dragBox = document.querySelector(nodeCLass);
+        // }
+
+        // 相当于angular的init函数，声明周期的开始，初始化的开始，对象第一次首先要运行的方法
+        init(options) {
+            this.options = { ...this.options, ...options };
+
+            this.dragBox = document.querySelector(this.options.nodeCLass);
+
+            this.onmousedown();
+
+        }
+
+        onmousedown() {
+            this.dragBox.onmousedown = (event) => {
+                event = event || window.event;
+
+                this.options.afterMousedown(this.dragBox);
+
+                this.diffx = event.clientX - this.dragBox.offsetLeft;
+                this.diffY = event.clientY - this.dragBox.offsetTop;
+
+                // 在document中监听鼠标移动事件（即拖拽）
+                this.onmousemove();
+
+                // 拖拽结束后，注销document的监听事件
+                this.onmouseup();
+
+            }
+        }
+
+        onmousemove() {
+            document.onmousemove = (event) => {
+                this.options.beforeMove(this.dragBox);
+                this.updatePosition(event);
+            }
+
+
+        }
+
+        onmouseup() {
+            document.onmouseup = ()=> {
+                this.options.afterMove(this.dragBox);
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+
+        }
+
+        updatePosition(event) {
+            // 根据差值重新定位，因为鼠标和元素左上角的距离是相同的，所以一句鼠标当前的位置，和差值，就可以定位到元素当前应该在哪个位置
+            this.dragBox.style.left = `${event.clientX - this.diffx}px`;
+            this.dragBox.style.top = `${event.clientY - this.diffY}px`;
+        }
+    }
+
+    const dragBox1 = new DragBox();
+    dragBox1.init({
+        nodeCLass: '.box1'
+    });
+
+    // 鼠标按下时，添加文字
+    const dragBox2 = new DragBox();
+    dragBox2.init({
+        nodeCLass: '.box2',
+        afterMousedown(dragBox) {
+            dragBox.innerHTML = '我被点击啦啦啦';
+        }
+    });
+    // 鼠标移动时，添加背景色
+    const dragBox3 = new DragBox();
+    dragBox3.init({
+        nodeCLass: '.box3',
+        beforeMove(dragBox) {
+            dragBox.style.backgroundColor = 'red';
+        }
+    });
+    // 鼠标移动时，弹出提醒
+    const dragBox4 = new DragBox();
+    dragBox4.init({
+        nodeCLass: '.box4',
+       afterMove(dragBox) {
+            alert('拖拽结束');
+        }
+    });
+
+
+</script>
+
+</html>
