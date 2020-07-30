@@ -61,7 +61,7 @@
             this.dragBox = document.querySelector(nodeCLass);
         }
 
-        // 相当于angular的init函数，声明周期的开始，初始化的开始
+        // 相当于angular的init函数，声明周期的开始，初始化的开始，对象第一次首先要运行的方法
         init() {
 
             this.onmousedown();
@@ -110,6 +110,7 @@
 
     const dragBox = new DragBox('.box');
     dragBox.init();
+    console.log(dragBox);
 
 
 </script>
